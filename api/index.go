@@ -12,6 +12,22 @@ import (
 	"time"
 )
 
+func GetMiddayTodayUnixThai(setTime time.Time) (int64, error) {
+	loc, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		fmt.Println("Error loading timezone:", err)
+		return 0, err
+	}
+
+	now := setTime.In(loc)
+
+	year, month, day := now.Date()
+
+	middayToday := time.Date(year, month, day, 12, 0, 0, 0, loc)
+
+	return middayToday.Unix(), nil
+}
+
 func getGameDetail(matchID string, API_KEY string) (model.FullGameDetail, error) {
 	u := &url.URL{
 		Scheme: "https",
@@ -83,7 +99,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	winCount := 0
 	lossCount := 0
-	gameString, err := getMatch(puuid, time.Now().Add(-10*time.Hour).Unix(), "ranked", 0, 20, apiKey)
+	getTime, err := GetMiddayTodayUnixThai(time.Now().Add(-12 * time.Hour))
+	if err != nil {
+		fmt.Println("xdd")
+	}
+	gameString, err := getMatch(puuid, getTime, "ranked", 0, 20, apiKey)
 	if err != nil {
 		fmt.Println("Error in getMatch:", err) // Log the error
 		// return c.Status(fiber.StatusInternalServerError).SendString("Error fetching match data")
