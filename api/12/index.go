@@ -26,7 +26,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	winCount := 0
 	lossCount := 0
-	getTime, err := utils.GetMiddayTodayUnixThai(time.Now(), 12)
+	startTime, endTime, err := utils.GetMiddayTodayUnixThai(time.Now().Add(-6*time.Hour), 12)
 	if err != nil {
 		response := struct {
 			Message string `json:"message"`
@@ -36,7 +36,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		utils.SendJSONResponse(w, response, http.StatusInternalServerError)
 		return
 	}
-	gameString, err := utils.GetMatch(puuid, getTime, "ranked", 0, 20, apiKey)
+	gameString, err := utils.GetMatch(puuid, startTime, endTime, "ranked", 0, 20, apiKey)
 	if err != nil {
 		response := struct {
 			Message string `json:"message"`

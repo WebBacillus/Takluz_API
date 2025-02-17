@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-func GetMiddayTodayUnixThai(setTime time.Time, clock int) (int64, error) {
+func GetMiddayTodayUnixThai(setTime time.Time, clock int) (int64, int64, error) {
 	loc, err := time.LoadLocation("Asia/Bangkok")
 	if err != nil {
-		return 0, fmt.Errorf("error loading timezone: %w", err)
+		return 0, 0, fmt.Errorf("error loading timezone: %w", err)
 	}
 
 	now := setTime.In(loc)
@@ -23,7 +23,7 @@ func GetMiddayTodayUnixThai(setTime time.Time, clock int) (int64, error) {
 
 	middayToday := time.Date(year, month, day, clock, 0, 0, 0, loc)
 
-	return middayToday.Unix(), nil
+	return middayToday.Unix(), middayToday.Add(18 * time.Hour).Unix(), nil
 }
 
 func GetGameDetail(matchID string, API_KEY string) (model.FullGameDetail, error) {
@@ -68,7 +68,7 @@ func GetGameDetail(matchID string, API_KEY string) (model.FullGameDetail, error)
 
 }
 
-func GetMatch(puuid string, time_stamp int64, gameType string, start int, count int, API_KEY string) ([]string, error) {
+func GetMatch(puuid string, startTime int64, endTime int64, gameType string, start int, count int, API_KEY string) ([]string, error) {
 	u := &url.URL{
 		Scheme: "https",
 		Host:   "sea.api.riotgames.com",
@@ -76,7 +76,8 @@ func GetMatch(puuid string, time_stamp int64, gameType string, start int, count 
 	}
 	u.Path, _ = url.JoinPath(u.Path, puuid, "ids")
 	q := u.Query()
-	q.Add("startTime", strconv.Itoa(int(time_stamp)))
+	q.Add("startTime", strconv.Itoa(int(startTime)))
+	q.Add("endTime", strconv.Itoa(int(startTime)))
 	q.Add("type", gameType)
 	q.Add("start", strconv.Itoa(start))
 	q.Add("count", strconv.Itoa(count))
