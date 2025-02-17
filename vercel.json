@@ -2,8 +2,20 @@
   "version": 2,
   "routes": [
     {
-      "src": "/getWinLOL",
-      "dest": "api/"
+      "src": "/00/getWinLOL",
+      "dest": "api/00/index.go"
+    },
+    {
+      "src": "/10/getWinLOL",
+      "dest": "api/10/index.go"
+    },
+    {
+      "src": "/12/getWinLOL",
+      "dest": "api/12/index.go"
+    },
+    {
+      "src": "/18getWinLOL",
+      "dest": "api/18/index.go"
     }
   ]
 }
