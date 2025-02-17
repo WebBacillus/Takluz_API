@@ -1,16 +1,17 @@
-package main
+package api
 
 import (
 	"Takluz_API/model"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/spf13/viper"
 )
 
 func getGameDetail(matchID string, API_KEY string) (model.FullGameDetail, error) {
@@ -74,39 +75,43 @@ func getMatch(puuid string, time_stamp int64, gameType string, start int, count 
 	return gameString, nil
 }
 
-func main() {
-	viper.SetConfigName("config")
-	viper.AddConfigPath("demo-viper")
-	viper.AutomaticEnv()
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(err.Error())
+func Handler(c *fiber.Ctx) error {
+	apiKey := os.Getenv("API_KEY")
+	puuid := os.Getenv("PUUID")
+
+	if apiKey == "" || puuid == "" {
+		return c.Status(fiber.StatusInternalServerError).SendString("API_KEY or PUUID not set")
 	}
-	app := fiber.New()
-	app.Get("/getWinLOL", func(c *fiber.Ctx) error {
-		winCount := 0
-		lossCount := 0
-		gameString, err := getMatch(viper.GetString("PUUID"), time.Now().Add(-10*time.Hour).Unix(), "ranked", 0, 20, viper.GetString("API_KEY"))
+
+	winCount := 0
+	lossCount := 0
+	gameString, err := getMatch(puuid, time.Now().Add(-10*time.Hour).Unix(), "ranked", 0, 20, apiKey)
+	if err != nil {
+		fmt.Println("Error in getMatch:", err) // Log the error
+		return c.Status(fiber.StatusInternalServerError).SendString("Error fetching match data")
+	}
+	if len(gameString) == 0 {
+		return c.Status(fiber.StatusNotFound).SendString("No Match Found")
+	}
+	for i := 0; i < len(gameString); i++ {
+		println(gameString[i])
+		match, err := getGameDetail(gameString[i], apiKey)
 		if err != nil {
-			panic(err.Error())
+			fmt.Println("Error in getMatchDetail:", err)
+			return c.Status(fiber.StatusInternalServerError).SendString("Error fetching match detail")
 		}
-		for i := 0; i < len(gameString); i++ {
-			println(gameString[i])
-			match, _ := getGameDetail(gameString[i], viper.GetString("API_KEY"))
-			playerList := match.Info.Participants
-			for j := 0; j < 10; j++ {
-				if playerList[j].Puuid == viper.GetString("PUUID") {
-					// fmt.Println(playerList[j])
-					if playerList[j].Win {
-						winCount += 1
-					} else {
-						lossCount += 1
-					}
+		playerList := match.Info.Participants
+		for j := 0; j < 10; j++ {
+			if playerList[j].Puuid == puuid {
+				// fmt.Println(playerList[j])
+				if playerList[j].Win {
+					winCount += 1
+				} else {
+					lossCount += 1
 				}
 			}
 		}
-		s := "Win:" + strconv.Itoa(winCount) + " Loss:" + strconv.Itoa(lossCount)
-		return c.SendString(s)
-	})
-	app.Listen("localhost:4444")
+	}
+	s := "Win:" + strconv.Itoa(winCount) + " Loss:" + strconv.Itoa(lossCount)
+	return c.SendString(s)
 }
