@@ -1,4 +1,4 @@
-package api
+package handler
 
 import (
 	"Takluz_API/model"
@@ -10,8 +10,6 @@ import (
 	"os"
 	"strconv"
 	"time"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 func getGameDetail(matchID string, API_KEY string) (model.FullGameDetail, error) {
@@ -75,12 +73,12 @@ func getMatch(puuid string, time_stamp int64, gameType string, start int, count 
 	return gameString, nil
 }
 
-func Handler(c *fiber.Ctx) error {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	apiKey := os.Getenv("API_KEY")
 	puuid := os.Getenv("PUUID")
 
 	if apiKey == "" || puuid == "" {
-		return c.Status(fiber.StatusInternalServerError).SendString("API_KEY or PUUID not set")
+		// return c.Status(fiber.StatusInternalServerError).SendString("API_KEY or PUUID not set")
 	}
 
 	winCount := 0
@@ -88,17 +86,17 @@ func Handler(c *fiber.Ctx) error {
 	gameString, err := getMatch(puuid, time.Now().Add(-10*time.Hour).Unix(), "ranked", 0, 20, apiKey)
 	if err != nil {
 		fmt.Println("Error in getMatch:", err) // Log the error
-		return c.Status(fiber.StatusInternalServerError).SendString("Error fetching match data")
+		// return c.Status(fiber.StatusInternalServerError).SendString("Error fetching match data")
 	}
 	if len(gameString) == 0 {
-		return c.Status(fiber.StatusNotFound).SendString("No Match Found")
+		// return c.Status(fiber.StatusNotFound).SendString("No Match Found")
 	}
 	for i := 0; i < len(gameString); i++ {
 		println(gameString[i])
 		match, err := getGameDetail(gameString[i], apiKey)
 		if err != nil {
 			fmt.Println("Error in getMatchDetail:", err)
-			return c.Status(fiber.StatusInternalServerError).SendString("Error fetching match detail")
+			// return c.Status(fiber.StatusInternalServerError).SendString("Error fetching match detail")
 		}
 		playerList := match.Info.Participants
 		for j := 0; j < 10; j++ {
@@ -113,5 +111,6 @@ func Handler(c *fiber.Ctx) error {
 		}
 	}
 	s := "Win:" + strconv.Itoa(winCount) + " Loss:" + strconv.Itoa(lossCount)
-	return c.SendString(s)
+	fmt.Fprintf(w, s)
+	// return c.SendString(s)
 }

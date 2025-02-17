@@ -1,15 +1,9 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/getWinLOL.go",
-      "use": "@vercel/go"
-    }
-  ],
   "routes": [
     {
       "src": "/getWinLOL",
-      "dest": "api/getWinLOL.go"
+      "dest": "api/"
     }
   ]
 }
