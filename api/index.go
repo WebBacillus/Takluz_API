@@ -111,6 +111,27 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	s := "Win:" + strconv.Itoa(winCount) + " Loss:" + strconv.Itoa(lossCount)
-	fmt.Fprintf(w, s)
-	// return c.SendString(s)
+	// fmt.Fprintf(w, s)
+	// Create a response struct.  This is much better than a concatenated string.
+	response := struct {
+		Wins   int    `json:"wins"`
+		Losses int    `json:"losses"`
+		String string `json:"string"`
+	}{
+		Wins:   winCount,
+		Losses: lossCount,
+		String: s,
+	}
+
+	// Marshal the response to JSON.
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Error encoding JSON response", http.StatusInternalServerError)
+		return
+	}
+
+	// Set the Content-Type header to application/json.  This is *essential*.
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK) //  Explicitly set the status code.
+	w.Write(jsonResponse)        // Write the JSON response.
 }
