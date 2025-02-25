@@ -84,6 +84,7 @@ func GetMatch(puuid string, startTime int64, endTime int64, gameType string, sta
 	q.Add("api_key", API_KEY)
 	u.RawQuery = q.Encode()
 	client := http.Client{}
+	fmt.Println(u.String())
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {

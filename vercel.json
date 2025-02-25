@@ -4,6 +4,10 @@
     {
       "src": "/12/getWinLOL",
       "dest": "api/12/index.go"
+    },
+    {
+      "src": "/rank/win/lol",
+      "dest": "api/rank/win/index.go"
     }
   ]
 }

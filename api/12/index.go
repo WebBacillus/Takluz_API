@@ -50,7 +50,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		response := struct {
 			Message string `json:"message"`
 		}{
-			Message: "No Match Found",
+			Message: "Win: 0| Loss: 0",
 		}
 		utils.SendJSONResponse(w, response, http.StatusOK)
 		return
