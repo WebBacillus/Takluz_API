@@ -8,6 +8,10 @@
     {
       "src": "/rank/win/lol",
       "dest": "api/rank/win/index.go"
+    },
+    {
+      "src": "/rank/tier/lol",
+      "dest": "api/rank/tier/index.go"
     }
   ]
 }

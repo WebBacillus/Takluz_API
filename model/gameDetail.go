@@ -23,6 +23,16 @@ type Info struct {
 	Teams        []Team        `json:"teams"`
 }
 
+type Rank struct {
+	LeagueID string `json:"leagueId"`
+	Puuid    string `json:"puuid"`
+	Tier     string `json:"tier"`
+	Rank     string `json:"rank"`
+	Lp       int    `json:"leaguePoints"`
+	Wins     int    `json:"wins"`
+	Losses   int    `json:"losses"`
+}
+
 type FullGameDetail struct {
 	Info Info `json:"info"`
 }

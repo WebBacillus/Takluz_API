@@ -113,6 +113,47 @@ func GetMatch(puuid string, startTime int64, endTime int64, gameType string, sta
 	}
 	return gameString, nil
 }
+
+func GetRankDetail(puuid string, API_KEY string) ([]model.Rank, error) {
+	u := &url.URL{
+		Scheme: "https",
+		Host:   "sg2.api.riotgames.com",
+		Path:   "/lol/league/v4/entries/by-puuid",
+	}
+	u.Path, _ = url.JoinPath(u.Path, puuid)
+	q := u.Query()
+	q.Add("api_key", API_KEY)
+	u.RawQuery = q.Encode()
+	client := http.Client{}
+	fmt.Println(u.String())
+
+	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	if err != nil {
+		return []model.Rank{}, fmt.Errorf("error creating request: %w", err)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return []model.Rank{}, fmt.Errorf("error sending request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		return []model.Rank{}, fmt.Errorf("riot API error: status code %d, body: %s", resp.StatusCode, string(bodyBytes))
+	}
+
+	content, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []model.Rank{}, fmt.Errorf("error reading response body: %w", err)
+	}
+
+	var rank []model.Rank
+	if err := json.Unmarshal(content, &rank); err != nil {
+		return []model.Rank{}, fmt.Errorf("error sending request: %w", err)
+	}
+	return rank, nil
+}
 func SendJSONResponse(w http.ResponseWriter, data interface{}, statusCode int) {
 	jsonResponse, err := json.Marshal(data)
 	if err != nil {
