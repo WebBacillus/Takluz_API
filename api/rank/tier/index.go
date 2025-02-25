@@ -24,16 +24,32 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-	w.Header().Set("Content-Type", "text/plain")
+	text := playerRank.Tier + ": " + strconv.Itoa(playerRank.Lp) + " lp"
+	html := fmt.Sprintf(`<!DOCTYPE html>
+	<html>
+	<head>
+		<title>Player Rank</title>
+		<style>
+			.rank-text {
+				font-size: 40px;
+				color: white;
+				background-color: black;
+			}
+		</style>
+		<script>
+			// JavaScript to refresh the page every 10 seconds.
+			setTimeout(function() {
+				window.location.reload(1); // Force a reload from the server
+				console.log("refresh")
+			}, 60000); // 60000 milliseconds = 60 seconds
+		</script>
+	</head>
+	<body>
+		<p class="rank-text">%s</p>
+	</body>
+	</html>`, text)
+
+	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)
-	tierList := []string{"IRON", "BRONZE", "SILVER", "GOLD", "PLATINUM", "EMERALD", "DIAMOND", "MASTER", "GRANDMASTER"}
-	tierEmoteList := []string{"LeagueIron", "LeagueBronze", "LeagueSilver", "LeagueGold", "LeaguePlatinum", "LeagueEmerald", "LeagueDiamond", "LeagueMaster", "LeagueGrandmaster"}
-	index := 0
-	for i := 0; i < len(tierList); i++ {
-		if tierList[i] == playerRank.Tier {
-			index = i
-		}
-	}
-	text := tierEmoteList[index] + " " + tierList[index] + ": " + strconv.Itoa(playerRank.Lp) + " lp"
-	fmt.Fprint(w, text)
+	fmt.Fprint(w, html)
 }
