@@ -23,7 +23,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 	var playerRank model.Rank
 	for i := 0; i < len(responseData); i++ {
-		if responseData[i].Puuid == puuid && responseData[i].LeagueID == "cf9aeb2e-475c-4ff1-80c8-6d26b9904207" {
+		if responseData[i].QueueType == "RANKED_SOLO_5x5" {
 			playerRank = responseData[i]
 			break
 		}
