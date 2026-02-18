@@ -1,3 +1,4 @@
 
 demo-viper/
 .vercel
+.env*.local

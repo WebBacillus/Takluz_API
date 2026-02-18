@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
+
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -48,69 +48,30 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	/*
 	winCount := 0
 	lossCount := 0
-	startTime, endTime, err := utils.GetMiddayTodayUnixThai(time.Now().Add(-6*time.Hour), 12)
+	winCount, lossCount, err = GetDailyWinLoss(apiKey, puuid, apiHost)
 	if err != nil {
 		response := struct {
 			Message string `json:"message"`
 		}{
-			Message: fmt.Sprintf("Error getting time: %v", err),
+			Message: fmt.Sprintf("Error getting win/loss: %v", err),
 		}
 		utils.SendJSONResponse(w, response, http.StatusInternalServerError)
 		return
 	}
-	gameString, err := utils.GetMatch(puuid, startTime, endTime, "ranked", 0, 20, apiKey, apiHost)
-	if err != nil {
-		response := struct {
-			Message string `json:"message"`
-		}{
-			Message: fmt.Sprintf("Error fetching match data: %v", err),
-		}
-		utils.SendJSONResponse(w, response, http.StatusInternalServerError)
-		return
-	}
-	if len(gameString) == 0 {
-		response := struct {
-			Message string `json:"message"`
-		}{
-			Message: "Win: 0 | Loss: 0 || " + text,
-		}
-		utils.SendJSONResponse(w, response, http.StatusOK)
-		return
-	}
-	for i := 0; i < len(gameString); i++ {
-		println(gameString[i])
-		match, err := utils.GetGameDetail(gameString[i], apiKey, apiHost)
-		if err != nil {
-			response := struct {
-				Message string `json:"message"`
-			}{
-				Message: fmt.Sprintf("Error fetching match detail: %v", err),
-			}
-			utils.SendJSONResponse(w, response, http.StatusInternalServerError)
-			return
-		}
-		playerList := match.Info.Participants
-		for j := 0; j < 10; j++ {
-			if playerList[j].Puuid == puuid {
-				if playerList[j].Win {
-					winCount += 1
-				} else {
-					lossCount += 1
-				}
-			}
-		}
-	}
+	*/
 
-	m := "Win: " + strconv.Itoa(winCount) + " | Loss: " + strconv.Itoa(lossCount) + " || " + text
+	// m := "Win: " + strconv.Itoa(winCount) + " | Loss: " + strconv.Itoa(lossCount) + " || " + text
+	m := text
 	response := struct {
 		Wins    int    `json:"wins"`
 		Losses  int    `json:"losses"`
 		Message string `json:"message"`
 	}{
-		Wins:    winCount,
-		Losses:  lossCount,
+		Wins:    0,
+		Losses:  0,
 		Message: m,
 	}
 
