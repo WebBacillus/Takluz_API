@@ -14,8 +14,9 @@ import (
 func Handler(w http.ResponseWriter, r *http.Request) {
 	apiKey := os.Getenv("API_KEY")
 	puuid := os.Getenv("PUUID")
+	apiHost := os.Getenv("RIOT_HOST")
 
-	responseData, err := utils.GetRankDetail(puuid, apiKey)
+	responseData, err := utils.GetRankDetail(puuid, apiKey, apiHost)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to perform request: %v", err), http.StatusInternalServerError)
 		return
@@ -37,11 +38,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 	text := tierEmoteList[index] + " " + tierList[index] + ": " + strconv.Itoa(playerRank.Lp) + " lp"
 
-	if apiKey == "" || puuid == "" {
+	if apiKey == "" || puuid == "" || apiHost == "" {
 		response := struct {
 			Message string `json:"message"`
 		}{
-			Message: "API_KEY or PUUID not set",
+			Message: "API_KEY, PUUID, or RIOT_HOST not set",
 		}
 		utils.SendJSONResponse(w, response, http.StatusInternalServerError)
 		return
@@ -59,7 +60,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		utils.SendJSONResponse(w, response, http.StatusInternalServerError)
 		return
 	}
-	gameString, err := utils.GetMatch(puuid, startTime, endTime, "ranked", 0, 20, apiKey)
+	gameString, err := utils.GetMatch(puuid, startTime, endTime, "ranked", 0, 20, apiKey, apiHost)
 	if err != nil {
 		response := struct {
 			Message string `json:"message"`
@@ -80,7 +81,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 	for i := 0; i < len(gameString); i++ {
 		println(gameString[i])
-		match, err := utils.GetGameDetail(gameString[i], apiKey)
+		match, err := utils.GetGameDetail(gameString[i], apiKey, apiHost)
 		if err != nil {
 			response := struct {
 				Message string `json:"message"`

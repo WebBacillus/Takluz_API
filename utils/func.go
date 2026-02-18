@@ -26,10 +26,10 @@ func GetMiddayTodayUnixThai(setTime time.Time, clock int) (int64, int64, error) 
 	return middayToday.Unix(), (middayToday.Add(18 * time.Hour)).Unix(), nil
 }
 
-func GetGameDetail(matchID string, API_KEY string) (model.FullGameDetail, error) {
+func GetGameDetail(matchID string, API_KEY string, apiHost string) (model.FullGameDetail, error) {
 	u := &url.URL{
 		Scheme: "https",
-		Host:   "sea.api.riotgames.com",
+		Host:   apiHost,
 		Path:   "/lol/match/v5/matches",
 	}
 	u.Path, _ = url.JoinPath(u.Path, matchID)
@@ -68,10 +68,10 @@ func GetGameDetail(matchID string, API_KEY string) (model.FullGameDetail, error)
 
 }
 
-func GetMatch(puuid string, startTime int64, endTime int64, gameType string, start int, count int, API_KEY string) ([]string, error) {
+func GetMatch(puuid string, startTime int64, endTime int64, gameType string, start int, count int, API_KEY string, apiHost string) ([]string, error) {
 	u := &url.URL{
 		Scheme: "https",
-		Host:   "sea.api.riotgames.com",
+		Host:   apiHost,
 		Path:   "/lol/match/v5/matches/by-puuid",
 	}
 	u.Path, _ = url.JoinPath(u.Path, puuid, "ids")
@@ -114,10 +114,10 @@ func GetMatch(puuid string, startTime int64, endTime int64, gameType string, sta
 	return gameString, nil
 }
 
-func GetRankDetail(puuid string, API_KEY string) ([]model.Rank, error) {
+func GetRankDetail(puuid string, API_KEY string, apiHost string) ([]model.Rank, error) {
 	u := &url.URL{
 		Scheme: "https",
-		Host:   "sg2.api.riotgames.com",
+		Host:   apiHost,
 		Path:   "/lol/league/v4/entries/by-puuid",
 	}
 	u.Path, _ = url.JoinPath(u.Path, puuid)
