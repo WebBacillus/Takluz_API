@@ -51,7 +51,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	/*
 	winCount := 0
 	lossCount := 0
-	winCount, lossCount, err = GetDailyWinLoss(apiKey, puuid, apiHost)
+	winCount, lossCount, err = utils.GetDailyWinLoss(apiKey, puuid, apiHost)
 	if err != nil {
 		response := struct {
 			Message string `json:"message"`

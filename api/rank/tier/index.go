@@ -12,7 +12,8 @@ import (
 func Handler(w http.ResponseWriter, r *http.Request) {
 	apiKey := os.Getenv("API_KEY")
 	puuid := os.Getenv("PUUID")
-	responseData, err := utils.GetRankDetail(puuid, apiKey)
+	apiHost := os.Getenv("RIOT_HOST")
+	responseData, err := utils.GetRankDetail(puuid, apiKey, apiHost)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to perform request: %v", err), http.StatusInternalServerError)
 		return

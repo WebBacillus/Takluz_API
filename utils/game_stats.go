@@ -1,7 +1,6 @@
-package handler
+package utils
 
 import (
-	"Takluz_API/utils"
 	"fmt"
 	"time"
 )
@@ -9,11 +8,11 @@ import (
 func GetDailyWinLoss(apiKey, puuid, apiHost string) (int, int, error) {
 	winCount := 0
 	lossCount := 0
-	startTime, endTime, err := utils.GetMiddayTodayUnixThai(time.Now().Add(-6*time.Hour), 12)
+	startTime, endTime, err := GetMiddayTodayUnixThai(time.Now().Add(-6*time.Hour), 12)
 	if err != nil {
 		return 0, 0, fmt.Errorf("error getting time: %v", err)
 	}
-	gameString, err := utils.GetMatch(puuid, startTime, endTime, "ranked", 0, 20, apiKey, apiHost)
+	gameString, err := GetMatch(puuid, startTime, endTime, "ranked", 0, 20, apiKey, apiHost)
 	if err != nil {
 		return 0, 0, fmt.Errorf("error fetching match data: %v", err)
 	}
@@ -21,7 +20,7 @@ func GetDailyWinLoss(apiKey, puuid, apiHost string) (int, int, error) {
 		return 0, 0, nil
 	}
 	for i := 0; i < len(gameString); i++ {
-		match, err := utils.GetGameDetail(gameString[i], apiKey, apiHost)
+		match, err := GetGameDetail(gameString[i], apiKey, apiHost)
 		if err != nil {
 			return 0, 0, fmt.Errorf("error fetching match detail: %v", err)
 		}
